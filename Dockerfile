@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-liberation \
     novnc \
     websockify \
+    netcat-openbsd \
     && locale-gen C.UTF-8 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
