@@ -1,0 +1,19 @@
+services:
+  desktop:
+    build: .
+    container_name: browser-linux
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:6080:6080"
+    shm_size: "1gb"
+    mem_limit: "2g"
+    cpus: "2.0"
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - browser_linux_home:/home/linuxuser
+
+volumes:
+  browser_linux_home:
