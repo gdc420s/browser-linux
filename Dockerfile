@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xfce4-goodies \
     x11vnc \
     xvfb \
+    x11-utils \
     supervisor \
     dbus-x11 \
     xterm \
