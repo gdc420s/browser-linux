@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     novnc \
     websockify \
     netcat-openbsd \
+    bzip2 \
     && locale-gen C.UTF-8 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
