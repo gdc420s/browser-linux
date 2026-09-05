@@ -3,8 +3,8 @@ set -euo pipefail
 
 : "${VNC_PASSWORD:?VNC_PASSWORD is required}"
 
-if [ "${#VNC_PASSWORD}" -lt 6 ]; then
-  echo "VNC_PASSWORD must be at least 6 characters." >&2
+if [ "${#VNC_PASSWORD}" -lt 12 ]; then
+  echo "VNC_PASSWORD must be at least 12 characters." >&2
   exit 1
 fi
 
