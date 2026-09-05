@@ -32,10 +32,16 @@ For a VPS, keep port 6080 bound to localhost and put Nginx/Caddy in front with H
 
 Do not expose the noVNC port directly to the public internet. Use a reverse proxy with HTTPS and a strong VNC password. The example Compose file binds 6080 to `127.0.0.1` only.
 
+The Nginx example includes WebSocket forwarding required by noVNC. Replace `linux.example.com` with your real hostname and configure TLS before exposing it publicly.
+
 ## Persistence
 
 The `browser_linux_home` volume persists `/home/linuxuser` between container recreations.
 
-## Notes
+## Firefox
 
-Firefox packaging on Ubuntu containers can vary because Ubuntu may route Firefox through Snap. If Firefox is unavailable in a particular build, use another browser package/base image or install a supported standalone build.
+Firefox is installed from Mozilla's official APT repository rather than Ubuntu's Snap package. This keeps the browser available in the container without requiring Snap/systemd.
+
+## CI
+
+GitHub Actions builds the image and runs a runtime smoke test that starts the container, verifies noVNC responds, and waits for the Docker health check to become healthy.
