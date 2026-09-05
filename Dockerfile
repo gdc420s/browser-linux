@@ -27,24 +27,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     novnc \
     websockify \
     netcat-openbsd \
-    bzip2 \
+    xz-utils \
     && locale-gen C.UTF-8 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Install a standalone Mozilla Firefox build instead of Ubuntu's Snap package.
+# Mozilla currently publishes Linux desktop tarballs as .tar.xz archives.
 RUN set -eux; \
     arch="$(dpkg --print-architecture)"; \
     case "$arch" in \
-      amd64) firefox_arch="linux64" ;; \
+      amd64) firefox_arch="linux-x86_64" ;; \
       arm64) firefox_arch="linux-aarch64" ;; \
       *) echo "Unsupported architecture: $arch"; exit 1 ;; \
     esac; \
-    mkdir -p /opt/firefox; \
-    curl -fsSL "https://download.mozilla.org/?product=firefox-latest&os=${firefox_arch}&lang=en-US" -o /tmp/firefox.tar.bz2; \
-    tar -xjf /tmp/firefox.tar.bz2 -C /opt; \
+    mkdir -p /opt; \
+    curl -fsSL "https://download.mozilla.org/?product=firefox-latest&os=${firefox_arch}&lang=en-US" -o /tmp/firefox.tar.xz; \
+    tar -xJf /tmp/firefox.tar.xz -C /opt; \
     ln -sf /opt/firefox/firefox /usr/local/bin/firefox; \
-    rm -f /tmp/firefox.tar.bz2
+    rm -f /tmp/firefox.tar.xz
 
 RUN useradd -m -s /bin/bash linuxuser \
     && echo 'linuxuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/linuxuser \
