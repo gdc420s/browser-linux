@@ -36,7 +36,7 @@ jobs:
           docker run -d \
             --name browser-linux-ci \
             --shm-size=1g \
-            -e VNC_PASSWORD=ci-test-password \
+            -e VNC_PASSWORD=ci-test-password
             -p 127.0.0.1:6080:6080 \
             browser-linux:test
 
@@ -86,6 +86,8 @@ jobs:
           test "$(docker inspect --format '{{json .HostConfig.SecurityOpt}}' browser-linux-ci)" = '["no-new-privileges:true"]'
           test "$(docker inspect --format '{{json .HostConfig.PortBindings}}' browser-linux-ci)" = '{"6080/tcp":[{"HostIp":"127.0.0.1","HostPort":"6080"}]}'
           docker exec browser-linux-ci sh -c '! command -v snap >/dev/null 2>&1'
+          docker exec browser-linux-ci sh -c '! command -v sudo >/dev/null 2>&1'
+          docker exec browser-linux-ci sh -c 'test "$(id -u linuxuser)" = 1000'
           docker exec browser-linux-ci sh -c 'test "$(stat -c %a /etc/x11vnc/passwd)" = 600'
 
       - name: Show container logs
