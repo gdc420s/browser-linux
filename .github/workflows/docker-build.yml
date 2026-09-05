@@ -36,6 +36,7 @@ jobs:
           docker run -d \
             --name browser-linux-ci \
             --shm-size=1g \
+            --security-opt no-new-privileges:true \
             -e VNC_PASSWORD=ci-test-password \
             -p 127.0.0.1:6080:6080 \
             browser-linux:test
