@@ -27,25 +27,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     novnc \
     websockify \
     netcat-openbsd \
-    xz-utils \
+    gnupg \
     && locale-gen C.UTF-8 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install a standalone Mozilla Firefox build instead of Ubuntu's Snap package.
-# Mozilla currently publishes Linux desktop tarballs as .tar.xz archives.
+# Install Firefox from Mozilla's official APT repository instead of Ubuntu's Snap package.
+# This follows Mozilla's recommended Debian/Ubuntu installation method.
 RUN set -eux; \
-    arch="$(dpkg --print-architecture)"; \
-    case "$arch" in \
-      amd64) firefox_arch="linux-x86_64" ;; \
-      arm64) firefox_arch="linux-aarch64" ;; \
-      *) echo "Unsupported architecture: $arch"; exit 1 ;; \
-    esac; \
-    mkdir -p /opt; \
-    curl -fsSL "https://download.mozilla.org/?product=firefox-latest&os=${firefox_arch}&lang=en-US" -o /tmp/firefox.tar.xz; \
-    tar -xJf /tmp/firefox.tar.xz -C /opt; \
-    ln -sf /opt/firefox/firefox /usr/local/bin/firefox; \
-    rm -f /tmp/firefox.tar.xz
+    install -d -m 0755 /etc/apt/keyrings; \
+    wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O /etc/apt/keyrings/packages.mozilla.org.asc; \
+    echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" > /etc/apt/sources.list.d/mozilla.list; \
+    printf '%s\n' \
+      'Package: *' \
+      'Pin: origin packages.mozilla.org' \
+      'Pin-Priority: 1000' \
+      > /etc/apt/preferences.d/mozilla; \
+    printf '%s\n' \
+      'Package: firefox' \
+      'Pin: release o=Ubuntu' \
+      'Pin-Priority: -1' \
+      > /etc/apt/preferences.d/firefox; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends firefox; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -s /bin/bash linuxuser \
     && echo 'linuxuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/linuxuser \
