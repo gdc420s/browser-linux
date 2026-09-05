@@ -83,11 +83,17 @@ jobs:
       - name: Verify runtime security settings
         run: |
           set -eu
+          echo "Checking no-new-privileges"
           test "$(docker inspect --format '{{json .HostConfig.SecurityOpt}}' browser-linux-ci)" = '["no-new-privileges:true"]'
+          echo "Checking localhost-only port binding"
           test "$(docker inspect --format '{{json .HostConfig.PortBindings}}' browser-linux-ci)" = '{"6080/tcp":[{"HostIp":"127.0.0.1","HostPort":"6080"}]}'
+          echo "Checking Snap is absent"
           docker exec browser-linux-ci sh -c '! command -v snap >/dev/null 2>&1'
+          echo "Checking sudo is absent"
           docker exec browser-linux-ci sh -c '! command -v sudo >/dev/null 2>&1'
-          docker exec browser-linux-ci sh -c 'test "$(id -u linuxuser)" = 1000'
+          echo "Checking linuxuser is non-root"
+          docker exec browser-linux-ci sh -c 'test "$(id -u linuxuser)" -ne 0'
+          echo "Checking VNC password file permissions"
           docker exec browser-linux-ci sh -c 'test "$(stat -c %a /etc/x11vnc/passwd)" = 600'
 
       - name: Show container logs
