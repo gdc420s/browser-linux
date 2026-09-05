@@ -72,6 +72,22 @@ jobs:
           docker logs browser-linux-ci
           exit 1
 
+      - name: Verify desktop services and Firefox
+        run: |
+          set -eu
+          docker exec browser-linux-ci supervisorctl status
+          docker exec browser-linux-ci sh -c 'xdpyinfo -display :1 >/dev/null'
+          docker exec browser-linux-ci sh -c 'nc -z 127.0.0.1 5900'
+          docker exec browser-linux-ci firefox --version
+
+      - name: Verify runtime security settings
+        run: |
+          set -eu
+          test "$(docker inspect --format '{{json .HostConfig.SecurityOpt}}' browser-linux-ci)" = '["no-new-privileges:true"]'
+          test "$(docker inspect --format '{{json .HostConfig.PortBindings}}' browser-linux-ci)" = '{"6080/tcp":[{"HostIp":"127.0.0.1","HostPort":"6080"}]}'
+          docker exec browser-linux-ci sh -c '! command -v snap >/dev/null 2>&1'
+          docker exec browser-linux-ci sh -c 'test "$(stat -c %a /etc/x11vnc/passwd)" = 600'
+
       - name: Show container logs
         if: always()
         run: docker logs browser-linux-ci
