@@ -17,7 +17,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xterm \
     thunar \
     mousepad \
-    sudo \
     curl \
     wget \
     ca-certificates \
@@ -53,9 +52,8 @@ RUN set -eux; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
+# Run the desktop user without sudo/root escalation.
 RUN useradd -m -s /bin/bash linuxuser \
-    && echo 'linuxuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/linuxuser \
-    && chmod 0440 /etc/sudoers.d/linuxuser \
     && mkdir -p /etc/x11vnc /var/log/supervisor \
     && chown -R linuxuser:linuxuser /home/linuxuser
 
