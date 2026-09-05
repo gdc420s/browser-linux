@@ -32,7 +32,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Firefox from Mozilla's official APT repository instead of Ubuntu's Snap package.
-# This follows Mozilla's recommended Debian/Ubuntu installation method.
 RUN set -eux; \
     install -d -m 0755 /etc/apt/keyrings; \
     wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O /etc/apt/keyrings/packages.mozilla.org.asc; \
